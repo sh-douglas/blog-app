@@ -9,6 +9,9 @@ import { NotFound } from "../pages/NotFound";
 import { AppLayout } from "../layouts/AppLayout";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { Admin } from "../pages/Admin";
+import { PublishedPosts } from "../pages/PublishedPosts";
+import { DraftPosts } from "../pages/DraftPosts";
+import { ManageUsers } from "../pages/ManageUsers";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +39,30 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["director", "editor"]}>
             <Admin />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/published",
+        element: (
+          <ProtectedRoute allowedRoles={["director", "editor"]}>
+            <PublishedPosts />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/drafts",
+        element: (
+          <ProtectedRoute allowedRoles={["director", "editor"]}>
+            <DraftPosts />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/users",
+        element: (
+          <ProtectedRoute allowedRoles={["director"]}>
+            <ManageUsers />
           </ProtectedRoute>
         ),
       },

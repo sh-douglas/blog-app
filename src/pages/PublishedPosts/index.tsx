@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
 
 import type { PostProps } from "../../types/post";
 
@@ -8,10 +10,9 @@ import api from "../../api";
 
 import { Loading } from "../../components/Loading";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { AdminPostCard } from "../../components/AdminPostCard";
 
-import { PostCard } from "../../components/PostCard";
-
-export function Home() {
+export function PublishedPosts() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -82,13 +83,22 @@ export function Home() {
 
   return (
     <div className="w-full max-w-5xl mx-auto py-10 px-6">
+      <div className="mb-4">
+        <Link
+          to="/admin"
+          className="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" />
+          Voltar para o menu
+        </Link>
+      </div>
+
       <header className="text-center mb-10">
         <h1 className="text-3xl font-extrabold text-slate-900 mb-3">
-          Últimas Postagens
+          Todas as postagens publicadas
         </h1>
         <p className="text-base text-slate-500 max-w-2xl mx-auto">
-          Acompanhe os artigos mais recentes e fique por dentro das novidades e
-          atualizações.
+          Faça gestão dos posts públicos da plataforma.
         </p>
       </header>
 
@@ -105,7 +115,7 @@ export function Home() {
         <>
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {currentPosts.map((post) => (
-              <PostCard {...post} key={post.id} />
+              <AdminPostCard {...post} key={post.id} />
             ))}
           </section>
 
