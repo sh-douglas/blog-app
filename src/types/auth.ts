@@ -17,4 +17,4 @@ interface AuthContextData {
   signOut: () => void;
 }
 
-export type { User, AuthContextData };
+export type { User, AuthContextData, Role };
