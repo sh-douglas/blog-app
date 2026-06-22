@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { FileText, FileEdit, Users, ArrowLeft } from "lucide-react";
+import { FileText, FileEdit, Users, ArrowLeft, Plus } from "lucide-react";
 
 export function Admin() {
   const { user } = useAuth();
@@ -53,6 +53,17 @@ export function Admin() {
             </span>
           </Link>
 
+          <Link
+            to="/admin/create"
+            className="group flex w-48 h-48 flex-col items-center justify-center gap-4 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-1 transition-all"
+          >
+            <div className="p-4 rounded-2xl bg-blue-50 text-blue-600 group-hover:bg-blue-100 group-hover:scale-110 transition-all">
+              <Plus size={32} strokeWidth={2} />
+            </div>
+            <span className="font-semibold text-slate-700 group-hover:text-blue-700 transition-colors">
+              Criar Postagem
+            </span>
+          </Link>
           {isDirector && (
             <Link
               to="/admin/users"
