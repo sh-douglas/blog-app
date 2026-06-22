@@ -20,10 +20,27 @@ export function PublishedPosts() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPosts = posts.slice(startIndex, endIndex);
+
+  function handlePreviousPage() {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }
+
+  function handleNextPage() {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }
+
   useEffect(() => {
     async function getPublishedPosts() {
       try {
-        const response = await api.get("/posts");
+        const response = await api.get("/manage/posts/published");
         setPosts(response.data);
       } catch (error) {
         let message = "Ocorreu um erro inesperado";
@@ -42,20 +59,37 @@ export function PublishedPosts() {
     getPublishedPosts();
   }, []);
 
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentPosts = posts.slice(startIndex, endIndex);
+  async function handleUnpublishPost(id: number) {
+    try {
+      await api.patch(`/manage/posts/${id}/unpublish`);
+      toast.success("Post despublicado com sucesso");
 
-  function handlePreviousPage() {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (error) {
+      let message = "Ocorreu um erro inesperado";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error || message;
+      }
+
+      toast.error(message);
     }
   }
 
-  function handleNextPage() {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
+  async function handleDeletePost(id: number) {
+    try {
+      await api.delete(`/manage/posts/${id}`);
+      toast.success("Post excluído com sucesso.");
+
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (error) {
+      let message = "Ocorreu um erro inesperado";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error || message;
+      }
+
+      toast.error(message);
     }
   }
 
@@ -115,7 +149,12 @@ export function PublishedPosts() {
         <>
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {currentPosts.map((post) => (
-              <AdminPostCard {...post} key={post.id} />
+              <AdminPostCard
+                key={post.id}
+                post={post}
+                onDelete={handleDeletePost}
+                onUnpublish={handleUnpublishPost}
+              />
             ))}
           </section>
 

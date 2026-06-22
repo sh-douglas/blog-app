@@ -7,24 +7,44 @@ import { formatDate } from "../../utils/formatDate";
 
 import { ConfirmModal } from "../ConfirmModal";
 
-export function AdminPostCard(post: PostProps) {
+interface AdminPostCardProps {
+  post: PostProps;
+  onDelete?: (id: number) => void | Promise<void>;
+  onPublish?: (id: number) => void | Promise<void>;
+  onUnpublish?: (id: number) => void | Promise<void>;
+}
+
+export function AdminPostCard({
+  post,
+  onDelete,
+  onPublish,
+  onUnpublish,
+}: AdminPostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
-  // Funções de execução real após confirmação do modal
-  function executeTogglePublish() {
-    const action = post.published ? "Despublicar" : "Publicar";
-    alert(`Ação executada: ${action} postagem ID ${post.id}`);
-    setIsPublishModalOpen(false);
-  }
-
   function handleEdit() {
-    alert(`Ação solicitada: Editar postagem ID ${post.id}`);
+    // Espaço reservado para futura implementação da edição
   }
 
-  function executeDelete() {
-    alert(`Ação executada: Apagar postagem ID ${post.id}`);
+  async function handleDeleteConfirm() {
+    if (onDelete) {
+      await onDelete(post.id);
+    }
     setIsDeleteModalOpen(false);
+  }
+
+  async function handlePublishConfirm() {
+    if (post.published) {
+      if (onUnpublish) {
+        await onUnpublish(post.id);
+      }
+    } else {
+      if (onPublish) {
+        await onPublish(post.id);
+      }
+    }
+    setIsPublishModalOpen(false);
   }
 
   return (
@@ -55,7 +75,6 @@ export function AdminPostCard(post: PostProps) {
           </Link>
 
           <div className="flex items-center gap-1">
-            {/* Botão de Publicação Dinâmico */}
             <button
               type="button"
               onClick={() => setIsPublishModalOpen(true)}
@@ -94,7 +113,6 @@ export function AdminPostCard(post: PostProps) {
         </div>
       </article>
 
-      {/* Modais de Confirmação */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         title="Apagar postagem"
@@ -102,7 +120,7 @@ export function AdminPostCard(post: PostProps) {
         confirmText="Apagar"
         cancelText="Cancelar"
         variant="danger"
-        onConfirm={executeDelete}
+        onConfirm={handleDeleteConfirm}
         onCancel={() => setIsDeleteModalOpen(false)}
       />
 
@@ -117,7 +135,7 @@ export function AdminPostCard(post: PostProps) {
         confirmText={post.published ? "Despublicar" : "Publicar"}
         cancelText="Cancelar"
         variant={post.published ? "warning" : "primary"}
-        onConfirm={executeTogglePublish}
+        onConfirm={handlePublishConfirm}
         onCancel={() => setIsPublishModalOpen(false)}
       />
     </>

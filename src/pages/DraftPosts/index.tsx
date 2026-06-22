@@ -17,9 +17,25 @@ export function DraftPosts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Estados e Variáveis de Paginação
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPosts = posts.slice(startIndex, endIndex);
+
+  function handlePreviousPage() {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }
+
+  function handleNextPage() {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }
 
   useEffect(() => {
     async function getDraftPosts() {
@@ -43,22 +59,37 @@ export function DraftPosts() {
     getDraftPosts();
   }, []);
 
-  // Lógica de Fatiamento da Lista
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentPosts = posts.slice(startIndex, endIndex);
+  async function handlePublishPost(id: number) {
+    try {
+      await api.patch(`/manage/posts/${id}/publish`);
+      toast.success("Post publicado com sucesso!");
 
-  // Funções de Controle
-  function handlePreviousPage() {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (error) {
+      let message = "Ocorreu um erro inesperado";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error || message;
+      }
+
+      toast.error(message);
     }
   }
 
-  function handleNextPage() {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
+  async function handleDeletePost(id: number) {
+    try {
+      await api.delete(`/manage/posts/${id}`);
+      toast.success("Rascunho excluído com sucesso.");
+
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (error) {
+      let message = "Ocorreu um erro inesperado";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.error || message;
+      }
+
+      toast.error(message);
     }
   }
 
@@ -116,14 +147,17 @@ export function DraftPosts() {
         </div>
       ) : (
         <>
-          {/* Mapeamento utiliza a variável fatiada currentPosts em vez de posts */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {currentPosts.map((post) => (
-              <AdminPostCard {...post} key={post.id} />
+              <AdminPostCard
+                key={post.id}
+                post={post}
+                onDelete={handleDeletePost}
+                onPublish={handlePublishPost}
+              />
             ))}
           </section>
 
-          {/* Renderização Condicional da Paginação */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-slate-200 pt-6 mt-6">
               <button
