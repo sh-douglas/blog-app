@@ -85,6 +85,10 @@ export function ManageUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Estados e Variáveis de Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
   useEffect(() => {
     async function getAllUsers() {
       try {
@@ -127,6 +131,25 @@ export function ManageUsers() {
     }
   }
 
+  // Lógica de Fatiamento da Lista
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentUsers = users.slice(startIndex, endIndex);
+
+  // Funções de Controle de Paginação
+  function handlePreviousPage() {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }
+
+  function handleNextPage() {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
@@ -166,11 +189,42 @@ export function ManageUsers() {
           </h2>
         </div>
       ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((user) => (
-            <UserCard key={user.id} user={user} onUpdateRole={updateUserRole} />
-          ))}
-        </section>
+        <>
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {currentUsers.map((user) => (
+              <UserCard
+                key={user.id}
+                user={user}
+                onUpdateRole={updateUserRole}
+              />
+            ))}
+          </section>
+
+          {/* Controles de Paginação Renderizados Condicionalmente */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-200 pt-6 mt-6">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className="px-5 py-2.5 text-sm font-bold bg-slate-100 text-slate-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 transition-colors"
+              >
+                Anterior
+              </button>
+
+              <span className="text-sm text-slate-600 font-medium">
+                Página {currentPage} de {totalPages}
+              </span>
+
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="px-5 py-2.5 text-sm font-bold bg-slate-100 text-slate-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 transition-colors"
+              >
+                Próxima
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
