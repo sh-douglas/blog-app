@@ -7,7 +7,7 @@ import type { PostFormData } from "../../schemas/post.schema";
 import { PostForm } from "../../components/PostForm";
 import { ArrowLeft } from "lucide-react";
 
-export default function CreatePost() {
+export function CreatePost() {
   const navigate = useNavigate();
 
   async function handleCreatePost(data: PostFormData) {

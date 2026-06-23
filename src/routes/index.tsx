@@ -12,7 +12,9 @@ import { Admin } from "../pages/Admin";
 import { PublishedPosts } from "../pages/PublishedPosts";
 import { DraftPosts } from "../pages/DraftPosts";
 import { ManageUsers } from "../pages/ManageUsers";
-import CreatePost from "../pages/CreatePost";
+import { CreatePost } from "../pages/CreatePost";
+import { EditPost } from "../pages/EditPost";
+import { AdminPostDetails } from "../pages/AdminPostDetails";
 
 const router = createBrowserRouter([
   {
@@ -70,8 +72,24 @@ const router = createBrowserRouter([
       {
         path: "admin/create",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["director", "editor"]}>
             <CreatePost />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/edit/:id",
+        element: (
+          <ProtectedRoute allowedRoles={["director", "editor"]}>
+            <EditPost />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/post/:id",
+        element: (
+          <ProtectedRoute allowedRoles={["director", "editor"]}>
+            <AdminPostDetails />
           </ProtectedRoute>
         ),
       },

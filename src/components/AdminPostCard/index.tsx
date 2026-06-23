@@ -23,10 +23,6 @@ export function AdminPostCard({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
-  function handleEdit() {
-    // Espaço reservado para futura implementação da edição
-  }
-
   async function handleDeleteConfirm() {
     if (onDelete) {
       await onDelete(post.id);
@@ -67,10 +63,11 @@ export function AdminPostCard({
 
         <div className="pt-6 flex items-center justify-between border-t border-slate-50 mt-4">
           <Link
-            to={`/post/details/${post.id}`}
+            to={`/admin/post/${post.id}`}
             className="group flex items-center text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
           >
             <span>Ver detalhes da postagem</span>
+
             <ChevronRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform duration-200" />
           </Link>
 
@@ -94,11 +91,12 @@ export function AdminPostCard({
 
             <button
               type="button"
-              onClick={handleEdit}
               title="Editar"
               className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
             >
-              <Pencil className="w-4 h-4" />
+              <Link to={`/admin/edit/${post.id}`}>
+                <Pencil className="w-4 h-4" />
+              </Link>
             </button>
 
             <button
